@@ -18,6 +18,7 @@ dependencies = [
   "basedpyright>=1.36.2",
   "fastapi[standard]>=0.127.1",
   "loguru>=0.7.3",
+  "poethepoet>=0.39.0",
   "psycopg2-binary>=2.9.11",
   "pydantic-settings>=2.12.0",
   "pydantic>=2.12.5",
@@ -38,6 +39,13 @@ reportMissingTypeStubs = false
 reportUnnecessaryTypeIgnoreComment = true
 typeCheckingMode = "strict"
 venv = ".venv"
+
+[tool.poe.tasks]
+webui = "streamlit run webui/main.py"
+
+[tool.poe.tasks.api]
+cmd = "fastapi run src/repository_infrastructure_example/application/api/main.py"
+use_exec = true
 
 [tool.pytest.ini_options]
 addopts = "-ra --durations=10 --cov=src --cov-report=term-missing"
