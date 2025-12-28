@@ -1,0 +1,75 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-ast
+      - id: check-case-conflict
+      - id: check-docstring-first
+      - id: check-executables-have-shebangs
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: check-json
+      - id: check-toml
+      - id: check-yaml
+      - id: check-xml
+      - id: detect-private-key
+      - id: debug-statements
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: ["--fix=lf"]
+      - id: trailing-whitespace
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.17.2
+    hooks:
+      - id: yamlfmt
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.20.0
+    hooks:
+      - id: pyupgrade
+  - repo: https://github.com/pappasam/toml-sort
+    rev: v0.24.2
+    hooks:
+      - id: toml-sort-fix
+        args:
+          - --in-place
+          - --sort-inline-tables
+          - --sort-inline-arrays
+          - --trailing-comma-inline-array
+          - --all
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.8.5
+    hooks:
+      - id: uv-lock
+        args: [--frozen]
+  - repo: local
+    hooks:
+      - id: one-migration-head
+        name: ensure only one migration head in alembic history
+        # Fail if more than one head is found
+        entry: bash -c "test $(uv run alembic heads | wc -l) -eq 1"
+        language: system
+        pass_filenames: false
+      - id: format
+        name: format code
+        entry: make
+        args: [format]
+        language: system
+        types: [python]
+        pass_filenames: false
+      - id: lint
+        name: lint code
+        entry: make
+        args: [lint]
+        types: [python]
+        language: system
+        pass_filenames: false
+      - id: typecheck
+        name: type check code
+        entry: make
+        args: [typecheck]
+        language: system
+        types: [python]
+        pass_filenames: false
