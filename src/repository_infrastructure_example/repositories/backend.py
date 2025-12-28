@@ -1,5 +1,5 @@
 from enum import StrEnum, auto
 
 
-class DatabaseBackend(StrEnum):
+class RepositoryBackend(StrEnum):
     POSTGRESQL = auto()

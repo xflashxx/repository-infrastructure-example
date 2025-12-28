@@ -42,7 +42,7 @@ def run_migrations_offline() -> None:
     application_context = ApplicationContext()
 
     context.configure(
-        url=application_context.settings.database.get_connection_uri(),
+        url=application_context.settings.postgres.get_connection_uri(),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -63,7 +63,7 @@ def run_migrations_online() -> None:
 
     configuration = config.get_section(config.config_ini_section, {})
     configuration["sqlalchemy.url"] = (
-        application_context.settings.database.get_connection_uri()
+        application_context.settings.postgres.get_connection_uri()
     )
 
     connectable = engine_from_config(

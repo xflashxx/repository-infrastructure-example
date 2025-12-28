@@ -3,10 +3,10 @@ from typing import Literal
 from pydantic import BaseModel, Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from repository_infrastructure_example.repositories.backend import DatabaseBackend
+from repository_infrastructure_example.repositories.backend import RepositoryBackend
 
 
-class DatabaseSettings(BaseModel):
+class PostgresSettings(BaseModel):
     host: str = Field(
         default="localhost", description="The host of the Postgresql server."
     )
@@ -22,6 +22,10 @@ class DatabaseSettings(BaseModel):
     )
     name: str = Field(
         default="database_name", description="The name of the database to connect to."
+    )
+    ssl: bool = Field(
+        default=False,
+        description="Whether to use SSL when connecting to the Postgresql server.",
     )
 
     def get_connection_uri(self, hide_password: bool = False) -> str:
@@ -40,23 +44,31 @@ class DatabaseSettings(BaseModel):
 
         auth = f"{self.username}:{password}" if password is not None else self.username
 
-        return f"postgresql+psycopg2://{auth}@{self.host}:{self.port}/{self.name}"
+        connection_uri = (
+            f"postgresql+psycopg2://{auth}@{self.host}:{self.port}/{self.name}"
+        )
+
+        if self.ssl:
+            connection_uri += "?sslmode=require"
+
+        return connection_uri
 
 
 class LoggingSettings(BaseModel):
-    log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
+    level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="The logging level of the application."
     )
 
 
 class RepositorySettings(BaseModel):
-    backend: DatabaseBackend = Field(
-        default=DatabaseBackend.POSTGRESQL, description="The type of repository to use."
+    backend: RepositoryBackend = Field(
+        default=RepositoryBackend.POSTGRESQL,
+        description="The type of repository to use.",
     )
 
 
 class ApplicationSettings(BaseSettings):
-    database: DatabaseSettings = Field(default_factory=DatabaseSettings)
+    postgres: PostgresSettings = Field(default_factory=PostgresSettings)
     repository: RepositorySettings = Field(default_factory=RepositorySettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
 

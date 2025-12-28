@@ -25,11 +25,11 @@ class ApplicationContext:
 
     def _set_up_loguru(self) -> None:
         logger.remove()
-        logger.add(sys.stderr, level=self.settings.logging.log_level)
+        logger.add(sys.stderr, level=self.settings.logging.level)
 
     def _set_up_postgres_client(self) -> None:
         self._postgres_client = PostgresClient(
-            connection_string=self.settings.database.get_connection_uri()
+            connection_string=self.settings.postgres.get_connection_uri()
         )
 
     @property
@@ -58,7 +58,7 @@ class ApplicationContext:
         table.add_column("Value")
 
         for settings in (
-            self.settings.database,
+            self.settings.postgres,
             self.settings.repository,
             self.settings.logging,
         ):
