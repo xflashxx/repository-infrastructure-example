@@ -8,13 +8,12 @@ def user_from_dao(dao: PostgresUserDAO, /) -> User:
     """
     Maps a DAO object to the user domain model.
 
-    Note that this function does return an unvalidated user domain model.
-
     :param dao: The DAO object.
     :return: The user domain model.
     """
-    return User.model_construct(
+    return User(
         id=dao.id,
+        organisation_id=dao.organisation_id,
         first_name=dao.first_name,
         last_name=dao.last_name,
         email=dao.email,

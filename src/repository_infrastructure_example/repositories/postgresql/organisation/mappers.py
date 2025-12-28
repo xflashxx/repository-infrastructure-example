@@ -8,12 +8,10 @@ def organisation_from_dao(dao: PostgresOrganisationDAO, /) -> Organisation:
     """
     Maps a DAO object to the organisation domain model.
 
-    Note that this function does return an unvalidated organisation domain model.
-
     :param dao: The DAO object.
     :return: The organisation domain model.
     """
-    return Organisation.model_construct(
+    return Organisation(
         id=dao.id,
         name=dao.name,
         slug=dao.slug,
