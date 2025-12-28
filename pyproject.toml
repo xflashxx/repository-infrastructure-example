@@ -48,7 +48,12 @@ cmd = "fastapi run src/repository_infrastructure_example/application/api/main.py
 use_exec = true
 
 [tool.pytest.ini_options]
-addopts = "-ra --durations=10 --cov=src --cov-report=term-missing"
+# -x: abort tests if one test fails (fail fast)
+# -ra: show extra test summary info for skipped, failed, or xfailed tests
+# --durations=10: show the 10 slowest tests
+# --cov=src: measure coverage for the src directory
+# --cov-report=term-missing: print missing lines in the terminal
+addopts = "-x -ra --durations=10 --cov=src --cov-report=term-missing"
 
 [tool.uv]
 package = true
