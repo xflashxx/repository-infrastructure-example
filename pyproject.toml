@@ -32,6 +32,8 @@ dependencies = [
   "sqlmodel>=0.0.30",
 ]
 description = "Add your description here"
+license = "MIT"
+license-files = ["LICENSE"]
 name = "repository-infrastructure-example"
 readme = "README.md"
 requires-python = ">=3.14"
