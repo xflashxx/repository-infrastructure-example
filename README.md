@@ -22,11 +22,31 @@ I'm not trying to be academically perfect here. These are pragmatic patterns tha
 
 Here's how I've structured the layers:
 
-```
-Entrypoint (FastAPI, CLI, Web UI) → Service → Repository → Database
-     ↓                                 ↓           ↓
-  HTTP Layer                        Business     Data Access
-                                    Logic Layer  Layer
+```mermaid
+flowchart LR
+    E[Entrypoint]
+    S[Service]
+    R[Repository]
+    D[(Database)]
+
+    E --> S --> R --> D
+
+    E:::layer
+    S:::layer
+    R:::layer
+
+
+    subgraph L1[HTTP Layer]
+        E
+    end
+
+    subgraph L2[Business Logic Layer]
+        S
+    end
+
+    subgraph L3[Data Access Layer]
+        R
+    end
 ```
 
 Each layer has a clear job, and dependencies flow in one direction.
