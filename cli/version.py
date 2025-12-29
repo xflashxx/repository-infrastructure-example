@@ -1,3 +1,7 @@
+"""
+CLI for displaying the version of the application.
+"""
+
 import typer
 
 from repository_infrastructure_example import __appname__, __version__

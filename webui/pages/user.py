@@ -1,3 +1,7 @@
+"""
+Streamlit Page for managing users.
+"""
+
 import time
 from typing import Final
 from uuid import UUID

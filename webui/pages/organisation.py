@@ -1,3 +1,7 @@
+"""
+Streamlit Page for managing organisations.
+"""
+
 import time
 from typing import Final
 

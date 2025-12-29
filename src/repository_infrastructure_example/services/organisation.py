@@ -79,6 +79,7 @@ class OrganisationService:
         Ensure that an organisation with the given ID exists.
 
         :param organisation_id: The ID of the organisation.
+        :return: None
         :raises OrganisationNotFoundError: If the organisation does not exist.
         """
         # Try to get all organisation IDs from cache

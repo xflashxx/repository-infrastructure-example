@@ -20,6 +20,12 @@ def set_up_loguru(level: str) -> None:
 
 
 def log_settings(*settings_to_log: BaseModel) -> None:
+    """
+    Log the settings of the application using rich table.
+
+    :param settings_to_log: The settings to log.
+    :return: None
+    """
     console = Console()
     table = Table(
         title=f"{__appname__} {__version__}",

@@ -1,3 +1,11 @@
+"""
+Application context for this example project.
+
+Provides a central place for dependency injection and access to all
+services, use-cases, and infrastructure needed by the app. Framework-agnostic
+and intended as the single entry point for obtaining application-level objects.
+"""
+
 from functools import cached_property
 
 from pydantic import BaseModel
@@ -20,6 +28,14 @@ class ApplicationContext:
     def __init__(self) -> None:
         set_up_loguru(self.settings.logging.level)
         self._set_up_clients()
+
+    def _set_up_clients(self) -> None:
+        self._clients = Clients(
+            postgres_client=PostgresClient(
+                connection_string=self.settings.postgres.get_connection_uri()
+            ),
+            redis_client=get_redis_client(self.settings.redis_cache),
+        )
 
     @cached_property
     def settings(self) -> ApplicationSettings:
@@ -45,17 +61,7 @@ class ApplicationContext:
             redis_cache_settings=self.settings.redis_cache,
         )
 
-    def _set_up_clients(self) -> None:
-        self._clients = Clients(
-            postgres_client=PostgresClient(
-                connection_string=self.settings.postgres.get_connection_uri()
-            ),
-            redis_client=get_redis_client(self.settings.redis_cache),
-        )
-
     def log_settings(self) -> None:
-        settings_to_log: list[BaseModel] = []
-        for _, settings in self.settings:
-            settings_to_log.append(settings)
-
+        # Gather all settings, then log them
+        settings_to_log: list[BaseModel] = [setting for _, setting in self.settings]
         log_settings(*settings_to_log)

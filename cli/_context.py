@@ -2,7 +2,11 @@ from repository_infrastructure_example.application.context import ApplicationCon
 
 
 def get_context() -> ApplicationContext:
-    """Creates and returns the application context."""
+    """
+    Creates and returns the application context.
+
+    :return: Instance of ApplicationContext.
+    """
     ctx = ApplicationContext()
     ctx.clients.postgres.run_migrations()
     return ctx

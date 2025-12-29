@@ -2,8 +2,8 @@ from uuid import UUID
 
 from fastapi import status
 
-from repository_infrastructure_example.caching.key_manager import CacheKeyManager
 from repository_infrastructure_example.caching.cache import CacheService
+from repository_infrastructure_example.caching.key_manager import CacheKeyManager
 from repository_infrastructure_example.domain.user import User
 from repository_infrastructure_example.exceptions import HTTPError
 from repository_infrastructure_example.repositories.user import UserRepository
@@ -67,6 +67,14 @@ class UserService:
         self._cache_key_manager = cache_key_manager
 
     def ensure_user_exists(self, *, organisation_id: UUID, user_id: UUID) -> None:
+        """
+        Ensure that a user with the given ID exists.
+
+        :param organisation_id: The ID of the organisation.
+        :param user_id: The ID of the user.
+        :return: None
+        :raises UserNotFoundError: If the user does not exist.
+        """
         # Try to get all user IDs from cache
         cached_user_ids = self._cache_service.get_set(
             self._cache_key_manager.get_user_ids_key(organisation_id)
@@ -90,10 +98,26 @@ class UserService:
             raise UserNotFoundError(user_id)
 
     def get_users(self, organisation_id: UUID) -> list[User]:
+        """
+        Get all users in an organisation.
+
+        :param organisation_id: The ID of the organisation.
+        :return: A list of users.
+        :raises OrganisationNotFoundError: If the organisation does not exist.
+        """
         self._organisation_service.ensure_organisation_exists(organisation_id)
         return self._repository.get_users(organisation_id)
 
     def get_user(self, *, organisation_id: UUID, user_id: UUID) -> User:
+        """
+        Get a user by ID.
+
+        :param organisation_id: The ID of the organisation.
+        :param user_id: The ID of the user.
+        :raises OrganisationNotFoundError: If the organisation does not exist.
+        :raises UserNotFoundError: If the user does not exist.
+        :return: The user.
+        """
         self._organisation_service.ensure_organisation_exists(organisation_id)
 
         user = self._repository.get_user(
@@ -104,7 +128,14 @@ class UserService:
 
         return user
 
-    def email_is_available(self, *, organisation_id: UUID, email: str) -> bool:
+    def _email_is_available(self, *, organisation_id: UUID, email: str) -> bool:
+        """
+        Check if an email is available for a user.
+
+        :param organisation_id: The ID of the organisation.
+        :param email: The email to check.
+        :return: True if the email is available, False otherwise.
+        """
         return self._repository.user_email_is_available(
             organisation_id=organisation_id, email=email
         )
@@ -118,9 +149,22 @@ class UserService:
         email: str,
         is_active: bool,
     ) -> UUID:
+        """
+        Add a new user to the system.
+
+        :param organisation_id: The ID of the organisation.
+        :param first_name: The first name of the user.
+        :param last_name: The last name of the user.
+        :param email: The email of the user.
+        :param is_active: Whether the user is active.
+        :return: The ID of the newly created user.
+        :raises OrganisationNotFoundError: If the organisation does not exist.
+        :raises UserAlreadyExistsError: If the user already exists.
+        :raises UserValidationError: If the user data is invalid.
+        """
         self._organisation_service.ensure_organisation_exists(organisation_id)
 
-        if not self.email_is_available(organisation_id=organisation_id, email=email):
+        if not self._email_is_available(organisation_id=organisation_id, email=email):
             raise UserAlreadyExistsError(email)
 
         try:
@@ -152,7 +196,26 @@ class UserService:
         last_name: str | None,
         email: str | None,
         is_active: bool | None,
-    ) -> User:
+    ) -> None:
+        """
+        Update an existing user in the system.
+
+        :param organisation_id: The ID of the organisation.
+        :param user_id: The ID of the user.
+        :param first_name: Optional new first name of the user. If None, the existing
+            first name will be retained. Defaults to None.
+        :param last_name: Optional new last name of the user. If None, the existing
+            last name will be retained. Defaults to None.
+        :param email: Optional new email of the user. If None, the existing email will
+            be retained. Defaults to None.
+        :param is_active: Optional new active status of the user. If None, the existing
+            active status will be retained. Defaults to None.
+        :return: None
+        :raises OrganisationNotFoundError: If the organisation does not exist.
+        :raises UserNotFoundError: If the user does not exist.
+        :raises UserAlreadyExistsError: If a user with the same email already exists.
+        :raises UserValidationError: If the user data is invalid.
+        """
         self._organisation_service.ensure_organisation_exists(organisation_id)
 
         existing = self._repository.get_user(
@@ -164,7 +227,7 @@ class UserService:
         if (
             email is not None
             and existing.email != email
-            and not self.email_is_available(
+            and not self._email_is_available(
                 organisation_id=organisation_id, email=email
             )
         ):
@@ -182,9 +245,16 @@ class UserService:
             raise UserValidationError(str(error)) from error
 
         self._repository.add_or_update_user(user)
-        return user
 
     def delete_user(self, *, organisation_id: UUID, user_id: UUID) -> None:
+        """
+        Deletes a user from the system.
+
+        :param organisation_id: The ID of the organisation the user belongs to.
+        :param user_id: The ID of the user to delete.
+        :raises OrganisationNotFoundError: If the organisation does not exist.
+        :raises UserNotFoundError: If the user does not exist.
+        """
         self._organisation_service.ensure_organisation_exists(
             organisation_id=organisation_id
         )

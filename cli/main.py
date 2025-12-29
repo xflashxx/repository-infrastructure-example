@@ -1,3 +1,9 @@
+"""
+Repository Infrastructure Example CLI
+
+This CLI provides a set of commands for interacting with the repository example.
+"""
+
 import typer
 from organisations import organisation_app
 from seed import seed_app

@@ -28,13 +28,10 @@ async def lifespan(app: FastAPI):
     # Set up application context
     context = ApplicationContext()
 
-    # Log all settings when the application starts.
     context.log_settings()
-
-    # Run database migrations
     context.clients.postgres.run_migrations()
 
-    # Store application context
+    # Store application context in the application state
     app.state.context = context
 
     # Yield control to the application

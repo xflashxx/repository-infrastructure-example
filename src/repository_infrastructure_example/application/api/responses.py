@@ -31,7 +31,7 @@ def openapi_responses_from_http_errors(
     *excs: type[HTTPError],
 ) -> dict[int, dict[str, Any]]:
     """
-    Construct responses for FastAPI endpoints.
+    Construct responses from HTTP errors for FastAPI endpoints.
 
     :param exceptions: Exception classes to construct responses for.
     :return: Dictionary of FastAPI response definitions.

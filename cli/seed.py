@@ -1,3 +1,7 @@
+"""
+CLI for seeding the development database with synthetic data.
+"""
+
 from typing import Annotated, Final
 
 import typer

@@ -22,4 +22,5 @@ health_router = APIRouter(prefix="/v1", tags=["health"])
     },
 )
 def health() -> SuccessResponseModel:
+    """Check if the service is healthy."""
     return SuccessResponseModel()

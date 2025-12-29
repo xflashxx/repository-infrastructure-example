@@ -1,9 +1,15 @@
+"""
+Developer Web Interface based on Streamlit.
+
+This is the main entry point for the Developer Web Interface.
+"""
+
 import streamlit as st
+from pages.organisation import organisation_entry_point
+from pages.user import user_entry_point
 
 from repository_infrastructure_example import __version__
 from repository_infrastructure_example.application.context import ApplicationContext
-from pages.organisation import organisation_entry_point
-from pages.user import user_entry_point
 
 st.set_page_config(
     page_title="Developer Web Interface", layout="wide", page_icon="🧑‍💻"

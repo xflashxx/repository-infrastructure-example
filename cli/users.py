@@ -1,3 +1,7 @@
+"""
+CLI for managing users.
+"""
+
 from typing import Annotated
 from uuid import UUID
 
