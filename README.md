@@ -125,52 +125,9 @@ Once the API is running, check out the documentation at `/docs` (Swagger) or `/r
 ## Configuration
 
 I use environment variables for all configuration via `pydantic-settings`. Nested settings use double underscores as separators—it keeps things clean.
+To get started, copy the example config `example.env` to `.env` and edit it to your liking.
 
-### Database Setup
-
-```bash
-POSTGRES__HOST=localhost
-POSTGRES__PORT=5432
-POSTGRES__USERNAME=myuser
-POSTGRES__PASSWORD=mypassword
-POSTGRES__NAME=mydb
-POSTGRES__SSL=false
-```
-
-### Cache Setup
-
-```bash
-REDIS__HOST=localhost
-REDIS__PORT=6379
-REDIS__PASSWORD=  # Optional
-REDIS__TIMEOUT=0.5
-REDIS__CLIENT_SIDE_CACHING=false
-
-CACHE__BACKEND=REDIS
-CACHE__KEYS_TTL=3600  # Seconds, or leave empty for no expiration
-```
-
-### API Authentication (Optional)
-
-If you want to secure your API:
-
-```bash
-API__REQUIRE_AUTHENTICATION=true
-API__API_KEY=your-secret-key
-API__DOCUMENTATION_USERNAME=admin
-API__DOCUMENTATION_PASSWORD=secure-password
-```
-
-When you enable authentication, you need to set all four values. Otherwise, just leave it disabled.
-
-### Other Settings
-
-```bash
-REPOSITORY__BACKEND=POSTGRESQL  # This is the only option for now
-LOGGING__LEVEL=INFO  # DEBUG | INFO | WARNING | ERROR | CRITICAL
-```
-
-There's a complete environment variables reference at the end if you need all the details.
+Also, see the [Environment Variables](#environment-variables) section for a complete reference.
 
 ## Working on the Code
 
@@ -256,7 +213,7 @@ I've made authentication optional via API keys, and the documentation endpoints 
 
 One thing I really like: you can test the API without starting a server using FastAPI's `TestClient`. It makes testing so much faster.
 
-## Environment Variables Reference
+## Environment Variables
 
 Here's the complete list if you need to dig into specific settings.
 
