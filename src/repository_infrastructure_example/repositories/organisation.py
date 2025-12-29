@@ -15,11 +15,19 @@ class OrganisationRepository(ABC):
         """
 
     @abstractmethod
-    def get_all_organisations(self) -> list[Organisation]:
+    def get_organisations(self) -> list[Organisation]:
         """
         Get all organisations.
 
         :return: List of all organisations.
+        """
+
+    @abstractmethod
+    def get_organisation_ids(self) -> set[UUID]:
+        """
+        Get all organisation IDs.
+
+        :return: Set of all organisation IDs.
         """
 
     @abstractmethod

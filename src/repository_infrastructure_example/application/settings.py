@@ -11,6 +11,7 @@ from pydantic import (
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
+from repository_infrastructure_example.caching.backend import CacheBackend
 from repository_infrastructure_example.repositories.backend import RepositoryBackend
 
 
@@ -104,7 +105,18 @@ class PostgresSettings(BaseModel):
         return connection_uri
 
 
-class RedisSettings(BaseModel):
+class CacheSettings(BaseModel):
+    backend: CacheBackend = Field(
+        default=CacheBackend.REDIS, description="The type of cache to use."
+    )
+    keys_ttl: PositiveInt | None = Field(
+        default=None,
+        description="The default time-to-live (TTL) in seconds for Redis keys."
+        "If None, keep keys forever.",
+    )
+
+
+class RedisCacheSettings(BaseModel):
     host: str = Field(description="The host of the Redis server.")
     port: int = Field(
         default=6379,
@@ -121,10 +133,6 @@ class RedisSettings(BaseModel):
     health_check_interval: PositiveInt = Field(
         default=30,
         description="The interval in seconds for Redis health checks. Defaults to 30 seconds.",
-    )
-    keys_ttl: PositiveInt | None = Field(
-        default=None,
-        description="The default time-to-live (TTL) in seconds for Redis keys (optional).",
     )
     client_side_caching: bool = Field(
         default=False,
@@ -148,7 +156,8 @@ class RepositorySettings(BaseModel):
 class ApplicationSettings(BaseSettings):
     api: APISettings = Field(default_factory=APISettings)
     postgres: PostgresSettings = Field(default_factory=PostgresSettings)  # pyright: ignore
-    redis: RedisSettings = Field(default_factory=RedisSettings)  # pyright: ignore
+    cache: CacheSettings = Field(default_factory=CacheSettings)
+    redis_cache: RedisCacheSettings = Field(default_factory=RedisCacheSettings)  # pyright: ignore
     repository: RepositorySettings = Field(default_factory=RepositorySettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
 

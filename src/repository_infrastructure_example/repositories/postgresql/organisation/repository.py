@@ -34,13 +34,21 @@ class PostgresOrganisationRepository(OrganisationRepository):
         return False if existing_organisation_id is None else True
 
     @override
-    def get_all_organisations(self) -> list[Organisation]:
+    def get_organisations(self) -> list[Organisation]:
         statement = select(PostgresOrganisationDAO)
 
         with self._session_factory() as session:
             results = session.exec(statement)
             daos = list(results.all())
             return [organisation_from_dao(dao) for dao in daos]
+
+    @override
+    def get_organisation_ids(self) -> set[UUID]:
+        statement = select(PostgresOrganisationDAO.id)
+
+        with self._session_factory() as session:
+            results = session.exec(statement)
+            return {organisation_id for organisation_id in results.all()}
 
     @override
     def get_organisation(self, organisation_id: UUID) -> Organisation | None:

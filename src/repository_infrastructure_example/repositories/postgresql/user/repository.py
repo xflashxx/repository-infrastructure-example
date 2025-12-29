@@ -43,14 +43,14 @@ class PostgresUserRepository(UserRepository):
             return user_from_dao(dao)
 
     @override
-    def user_exists(self, *, organisation_id: UUID, user_id: UUID) -> bool:
+    def get_user_ids(self, organisation_id: UUID) -> set[UUID]:
         statement = select(PostgresUserDAO.id).where(
-            PostgresUserDAO.id == user_id,
-            PostgresUserDAO.organisation_id == organisation_id,
+            PostgresUserDAO.organisation_id == organisation_id
         )
+
         with self._session_factory() as session:
-            existing_user_id = session.exec(statement).first()
-        return existing_user_id is not None
+            results = session.exec(statement)
+            return {user_id for user_id in results.all()}
 
     @override
     def user_email_is_available(self, organisation_id: UUID, email: str) -> bool:

@@ -3,6 +3,8 @@ from uuid import UUID
 from fastapi import status
 from typing_extensions import overload
 
+from repository_infrastructure_example.caching.cache import CacheService
+from repository_infrastructure_example.caching.key_manager import CacheKeyManager
 from repository_infrastructure_example.domain.organisation import Organisation
 from repository_infrastructure_example.exceptions import HTTPError
 from repository_infrastructure_example.repositories.organisation import (
@@ -58,12 +60,19 @@ class OrganisationValidationError(OrganisationServiceError, HTTPError):
 
 class OrganisationService:
     _repository: OrganisationRepository
+    _cache_service: CacheService
+    _cache_key_manager: CacheKeyManager
 
     def __init__(
         self,
+        *,
         repository: OrganisationRepository,
+        cache_service: CacheService,
+        cache_key_manager: CacheKeyManager,
     ) -> None:
         self._repository = repository
+        self._cache_service = cache_service
+        self._cache_key_manager = cache_key_manager
 
     def ensure_organisation_exists(self, organisation_id: UUID) -> None:
         """
@@ -72,7 +81,26 @@ class OrganisationService:
         :param organisation_id: The ID of the organisation.
         :raises OrganisationNotFoundError: If the organisation does not exist.
         """
-        if not self._repository.organisation_exists(organisation_id):
+        # Try to get all organisation IDs from cache
+        cached_organisation_ids: set[str] | None = self._cache_service.get_set(
+            self._cache_key_manager.organisation_ids_key
+        )
+        if cached_organisation_ids is not None:
+            if str(organisation_id) in cached_organisation_ids:
+                return
+            raise OrganisationNotFoundError(organisation_id)
+
+        # Fetch from the repository
+        organisation_ids = self._repository.get_organisation_ids()
+
+        # Store organisation IDs in cache
+        self._cache_service.store_set(
+            key=self._cache_key_manager.organisation_ids_key,
+            value=set(map(str, organisation_ids)),
+        )
+
+        # Check if the organisation ID exists
+        if organisation_id not in organisation_ids:
             raise OrganisationNotFoundError(organisation_id)
 
     def get_organisations(self) -> list[Organisation]:
@@ -81,7 +109,7 @@ class OrganisationService:
 
         :return: List of all organisations.
         """
-        return self._repository.get_all_organisations()
+        return self._repository.get_organisations()
 
     def get_organisation(self, organisation_id: UUID) -> Organisation:
         """
@@ -121,6 +149,9 @@ class OrganisationService:
             raise OrganisationValidationError(str(error)) from error
 
         self._repository.add_or_update_organisation(organisation)
+
+        # Delete cached organisation IDs to force refresh on next access
+        self._cache_service.delete_key(self._cache_key_manager.organisation_ids_key)
 
         return organisation.id
 
@@ -198,3 +229,4 @@ class OrganisationService:
         """
         self.ensure_organisation_exists(organisation_id)
         self._repository.delete_organisation(organisation_id)
+        self._cache_service.delete_key(self._cache_key_manager.organisation_ids_key)

@@ -1,10 +1,10 @@
 from redis import Redis
 from redis.cache import CacheConfig
 
-from repository_infrastructure_example.application.settings import RedisSettings
+from repository_infrastructure_example.application.settings import RedisCacheSettings
 
 
-def get_redis_client(settings: RedisSettings) -> Redis:
+def get_redis_client(settings: RedisCacheSettings) -> Redis:
     """
     Creates and returns a Redis client based on the provided settings.
 

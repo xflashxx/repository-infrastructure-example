@@ -25,13 +25,12 @@ class UserRepository(ABC):
         """
 
     @abstractmethod
-    def user_exists(self, *, organisation_id: UUID, user_id: UUID) -> bool:
+    def get_user_ids(self, organisation_id: UUID) -> set[UUID]:
         """
-        Check if a user exists in the repository.
+        Get all user IDs in an organisation.
 
         :param organisation_id: The ID of the organisation.
-        :param user_id: The ID of the user.
-        :return: True if the user exists, False otherwise.
+        :return: A set of user IDs.
         """
 
     @abstractmethod

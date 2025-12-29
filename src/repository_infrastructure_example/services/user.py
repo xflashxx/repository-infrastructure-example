@@ -2,6 +2,8 @@ from uuid import UUID
 
 from fastapi import status
 
+from repository_infrastructure_example.caching.key_manager import CacheKeyManager
+from repository_infrastructure_example.caching.cache import CacheService
 from repository_infrastructure_example.domain.user import User
 from repository_infrastructure_example.exceptions import HTTPError
 from repository_infrastructure_example.repositories.user import UserRepository
@@ -48,15 +50,44 @@ class UserValidationError(UserServiceError, HTTPError):
 class UserService:
     _organisation_service: OrganisationService
     _repository: UserRepository
+    _cache_service: CacheService
+    _cache_key_manager: CacheKeyManager
 
     def __init__(
         self,
         *,
         organisation_service: OrganisationService,
         user_repository: UserRepository,
+        cache_service: CacheService,
+        cache_key_manager: CacheKeyManager,
     ) -> None:
         self._organisation_service = organisation_service
         self._repository = user_repository
+        self._cache_service = cache_service
+        self._cache_key_manager = cache_key_manager
+
+    def ensure_user_exists(self, *, organisation_id: UUID, user_id: UUID) -> None:
+        # Try to get all user IDs from cache
+        cached_user_ids = self._cache_service.get_set(
+            self._cache_key_manager.get_user_ids_key(organisation_id)
+        )
+        if cached_user_ids is not None:
+            if str(user_id) in cached_user_ids:
+                return
+            raise UserNotFoundError(user_id)
+
+        # Fetch from the repository
+        user_ids = self._repository.get_user_ids(organisation_id)
+
+        # Store user IDs in cache
+        self._cache_service.store_set(
+            key=self._cache_key_manager.get_user_ids_key(organisation_id),
+            value=set(map(str, user_ids)),
+        )
+
+        # Check if the user exists
+        if user_id not in user_ids:
+            raise UserNotFoundError(user_id)
 
     def get_users(self, organisation_id: UUID) -> list[User]:
         self._organisation_service.ensure_organisation_exists(organisation_id)
@@ -104,6 +135,12 @@ class UserService:
             raise UserValidationError(str(error)) from error
 
         self._repository.add_or_update_user(user)
+
+        # Invalidate the cache
+        self._cache_service.delete_key(
+            self._cache_key_manager.get_user_ids_key(organisation_id)
+        )
+
         return user.id
 
     def update_user(
@@ -147,18 +184,12 @@ class UserService:
         self._repository.add_or_update_user(user)
         return user
 
-    def ensure_user_exists(self, *, organisation_id: UUID, user_id: UUID) -> User:
-        existing = self._repository.get_user(
-            user_id=user_id, organisation_id=organisation_id
-        )
-        if existing is None:
-            raise UserNotFoundError(user_id)
-        return existing
-
     def delete_user(self, *, organisation_id: UUID, user_id: UUID) -> None:
         self._organisation_service.ensure_organisation_exists(
             organisation_id=organisation_id
         )
-
         self.ensure_user_exists(organisation_id=organisation_id, user_id=user_id)
         self._repository.delete_user(organisation_id=organisation_id, user_id=user_id)
+        self._cache_service.delete_key(
+            self._cache_key_manager.get_user_ids_key(organisation_id)
+        )

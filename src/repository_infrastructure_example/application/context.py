@@ -1,5 +1,7 @@
 from functools import cached_property
 
+from pydantic import BaseModel
+
 from repository_infrastructure_example.application.settings import ApplicationSettings
 from repository_infrastructure_example.containers.clients import Clients
 from repository_infrastructure_example.containers.repositories import Repositories
@@ -36,19 +38,24 @@ class ApplicationContext:
 
     @cached_property
     def services(self) -> Services:
-        return Services(repositories=self.repositories)
+        return Services(
+            repositories=self.repositories,
+            redis_client=self.clients.redis,
+            cache_settings=self.settings.cache,
+            redis_cache_settings=self.settings.redis_cache,
+        )
 
     def _set_up_clients(self) -> None:
         self._clients = Clients(
             postgres_client=PostgresClient(
                 connection_string=self.settings.postgres.get_connection_uri()
             ),
-            redis_client=get_redis_client(self.settings.redis),
+            redis_client=get_redis_client(self.settings.redis_cache),
         )
 
     def log_settings(self) -> None:
-        log_settings(
-            self.settings.postgres,
-            self.settings.repository,
-            self.settings.logging,
-        )
+        settings_to_log: list[BaseModel] = []
+        for _, settings in self.settings:
+            settings_to_log.append(settings)
+
+        log_settings(*settings_to_log)
