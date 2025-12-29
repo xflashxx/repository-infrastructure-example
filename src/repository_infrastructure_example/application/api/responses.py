@@ -44,8 +44,6 @@ def openapi_responses_from_http_errors(
             exceptions_by_status_code[exc.status_code] = []
         exceptions_by_status_code[exc.status_code].append(exc)
 
-    # Construct responses
-
     # Add default 500 response
     responses: dict[int, dict[str, Any]] = {
         status.HTTP_500_INTERNAL_SERVER_ERROR: {
@@ -54,12 +52,16 @@ def openapi_responses_from_http_errors(
         }
     }
 
+    # Construct responses from grouped exceptions
     for status_code, exceptions in exceptions_by_status_code.items():
         messages = [exc.detail for exc in exceptions]
+
         # Remove punctuation from messages
         messages = [message.rstrip(".") for message in messages]
+
         # Construct response description
         description = ", or ".join(messages)
+
         # Construct response model
         responses[status_code] = {
             "model": ErrorResponseModel,

@@ -1100,6 +1100,10 @@ dependencies = [
 ]
 
 [package.dev-dependencies]
+cli = [
+    { name = "faker" },
+    { name = "typer" },
+]
 dev = [
     { name = "faker" },
     { name = "pre-commit" },
@@ -1128,6 +1132,10 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
+cli = [
+    { name = "faker", specifier = ">=39.0.0" },
+    { name = "typer", specifier = ">=0.21.0" },
+]
 dev = [
     { name = "faker", specifier = ">=39.0.0" },
     { name = "pre-commit", specifier = ">=4.5.1" },

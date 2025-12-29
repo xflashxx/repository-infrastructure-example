@@ -14,7 +14,7 @@ _DEFAULT_RELOAD_TIME_SECONDS: Final[int] = 2
 
 def display_organisations(service: OrganisationService) -> None:
     st.subheader("All organisations")
-    organisations = service.get_all_organisations()
+    organisations = service.get_organisations()
     if not organisations:
         st.info("No organisations found.")
         return
@@ -63,7 +63,7 @@ def add_organisation(service: OrganisationService) -> None:
 def edit_organisation(service: OrganisationService) -> None:
     st.subheader("Edit Organisation")
 
-    organisations = service.get_all_organisations()
+    organisations = service.get_organisations()
     if not organisations:
         st.info("No organisations available.")
         return

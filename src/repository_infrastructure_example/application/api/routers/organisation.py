@@ -37,7 +37,7 @@ def get_all_organisations(
     organisation_service: OrganisationServiceDep,
 ) -> list[Organisation]:
     """Get all organisations."""
-    return organisation_service.get_all_organisations()
+    return organisation_service.get_organisations()
 
 
 @organisation_router.get(

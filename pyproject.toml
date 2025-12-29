@@ -1,4 +1,8 @@
 [dependency-groups]
+cli = [
+  "faker>=39.0.0",
+  "typer>=0.21.0",
+]
 dev = [
   "faker>=39.0.0",
   "pre-commit>=4.5.1",
@@ -41,7 +45,8 @@ typeCheckingMode = "strict"
 venv = ".venv"
 
 [tool.poe.tasks]
-webui = "streamlit run webui/main.py"
+cli = "uv run --group cli cli/main.py"
+webui = "uv run --group webui streamlit run webui/main.py"
 
 [tool.poe.tasks.api]
 cmd = "fastapi run src/repository_infrastructure_example/application/api/main.py"

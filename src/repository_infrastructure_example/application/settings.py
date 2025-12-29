@@ -7,9 +7,7 @@ from repository_infrastructure_example.repositories.backend import RepositoryBac
 
 
 class PostgresSettings(BaseModel):
-    host: str = Field(
-        default="localhost", description="The host of the Postgresql server."
-    )
+    host: str = Field(description="The host of the Postgresql server.")
     port: int = Field(
         default=5432,
         description="The port to connect to the Postgresql server. Defaults to 5432.",
@@ -17,12 +15,10 @@ class PostgresSettings(BaseModel):
     username: str = Field(
         default="username", description="The username to authenticate with."
     )
-    password: SecretStr | None = Field(
-        default=None, description="The password for the database user (optional)."
+    password: SecretStr = Field(
+        description="The password for the database user (optional)."
     )
-    name: str = Field(
-        default="database_name", description="The name of the database to connect to."
-    )
+    name: str = Field(description="The name of the database to connect to.")
     ssl: bool = Field(
         default=False,
         description="Whether to use SSL when connecting to the Postgresql server.",
@@ -35,18 +31,8 @@ class PostgresSettings(BaseModel):
             Defaults to False.
         :return: The connection URI.
         """
-        if hide_password:
-            password = self.password if self.password is not None else None
-        else:
-            password = (
-                self.password.get_secret_value() if self.password is not None else None
-            )
-
-        auth = f"{self.username}:{password}" if password is not None else self.username
-
-        connection_uri = (
-            f"postgresql+psycopg2://{auth}@{self.host}:{self.port}/{self.name}"
-        )
+        password = self.password if hide_password else self.password.get_secret_value()
+        connection_uri = f"postgresql+psycopg2://{self.username}:{password}@{self.host}:{self.port}/{self.name}"
 
         if self.ssl:
             connection_uri += "?sslmode=require"
@@ -68,7 +54,7 @@ class RepositorySettings(BaseModel):
 
 
 class ApplicationSettings(BaseSettings):
-    postgres: PostgresSettings = Field(default_factory=PostgresSettings)
+    postgres: PostgresSettings = Field(default_factory=PostgresSettings)  # pyright: ignore
     repository: RepositorySettings = Field(default_factory=RepositorySettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
 

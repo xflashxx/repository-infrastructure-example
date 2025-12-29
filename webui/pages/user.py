@@ -137,7 +137,7 @@ def user_entry_point() -> None:
     organisation_service = application_context.services.organisation
 
     # Fetch all organisations
-    all_organisations = organisation_service.get_all_organisations()
+    all_organisations = organisation_service.get_organisations()
     if not all_organisations:
         st.warning("No organisations found. Please add an organisation first.")
         st.stop()

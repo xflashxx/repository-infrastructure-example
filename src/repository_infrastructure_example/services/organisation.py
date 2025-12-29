@@ -75,7 +75,7 @@ class OrganisationService:
         if not self._repository.organisation_exists(organisation_id):
             raise OrganisationNotFoundError(organisation_id)
 
-    def get_all_organisations(self) -> list[Organisation]:
+    def get_organisations(self) -> list[Organisation]:
         """
         Get all organisations.
 
