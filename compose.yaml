@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:17.7
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES__USERNAME}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+      POSTGRES_DB: ${POSTGRES__NAME}
+    networks:
+      - repository-infrastructure-example-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  repository-infrastructure-example:
+    build:
+      context: .
+    restart: unless-stopped
+    env_file: ./.env
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+    networks:
+      - repository-infrastructure-example-network
+networks:
+  repository-infrastructure-example-network:
+    driver: bridge
+volumes:
+  postgres-data:
