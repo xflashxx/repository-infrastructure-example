@@ -4,7 +4,7 @@ from redis import Redis
 
 from repository_infrastructure_example.application.settings import (
     CacheSettings,
-    RedisCacheSettings,
+    RedisSettings,
 )
 from repository_infrastructure_example.caching.backend import CacheBackend
 from repository_infrastructure_example.caching.cache import CacheService
@@ -19,7 +19,7 @@ class Services:
     _repositories: Repositories
     _redis_client: Redis
     _cache_settings: CacheSettings
-    _redis_cache_settings: RedisCacheSettings
+    _redis_settings: RedisSettings
 
     def __init__(
         self,
@@ -27,12 +27,12 @@ class Services:
         repositories: Repositories,
         redis_client: Redis,
         cache_settings: CacheSettings,
-        redis_cache_settings: RedisCacheSettings,
+        redis_cache_settings: RedisSettings,
     ) -> None:
         self._repositories = repositories
         self._redis_client = redis_client
         self._cache_settings = cache_settings
-        self._redis_cache_settings = redis_cache_settings
+        self._redis_settings = redis_cache_settings
 
     @property
     def cache_service(self) -> CacheService:

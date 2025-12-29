@@ -77,9 +77,7 @@ class PostgresSettings(BaseModel):
         default=5432,
         description="The port to connect to the Postgresql server. Defaults to 5432.",
     )
-    username: str = Field(
-        default="username", description="The username to authenticate with."
-    )
+    username: str = Field(description="The username to authenticate with.")
     password: SecretStr = Field(
         description="The password for the database user (optional)."
     )
@@ -116,7 +114,7 @@ class CacheSettings(BaseModel):
     )
 
 
-class RedisCacheSettings(BaseModel):
+class RedisSettings(BaseModel):
     host: str = Field(description="The host of the Redis server.")
     port: int = Field(
         default=6379,
@@ -157,7 +155,7 @@ class ApplicationSettings(BaseSettings):
     api: APISettings = Field(default_factory=APISettings)
     postgres: PostgresSettings = Field(default_factory=PostgresSettings)  # pyright: ignore
     cache: CacheSettings = Field(default_factory=CacheSettings)
-    redis_cache: RedisCacheSettings = Field(default_factory=RedisCacheSettings)  # pyright: ignore
+    redis: RedisSettings = Field(default_factory=RedisSettings)  # pyright: ignore
     repository: RepositorySettings = Field(default_factory=RepositorySettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
 

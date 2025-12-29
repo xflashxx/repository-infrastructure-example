@@ -34,7 +34,7 @@ class ApplicationContext:
             postgres_client=PostgresClient(
                 connection_string=self.settings.postgres.get_connection_uri()
             ),
-            redis_client=get_redis_client(self.settings.redis_cache),
+            redis_client=get_redis_client(self.settings.redis),
         )
 
     @cached_property
@@ -58,7 +58,7 @@ class ApplicationContext:
             repositories=self.repositories,
             redis_client=self.clients.redis,
             cache_settings=self.settings.cache,
-            redis_cache_settings=self.settings.redis_cache,
+            redis_cache_settings=self.settings.redis,
         )
 
     def log_settings(self) -> None:
