@@ -15,7 +15,7 @@ from repository_infrastructure_example.caching.backend import CacheBackend
 from repository_infrastructure_example.repositories.backend import RepositoryBackend
 
 
-class APISettings(BaseModel):
+class APISettings(BaseSettings):
     require_authentication: bool = Field(
         default=False,
         description="Whether the API requires authentication for access.",
@@ -70,18 +70,27 @@ class APISettings(BaseModel):
             )
         return self
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        env_prefix="API__",
+    )
 
-class PostgresSettings(BaseModel):
-    host: str = Field(description="The host of the Postgresql server.")
+
+class PostgresSettings(BaseSettings):
+    host: str = Field(default=..., description="The host of the Postgresql server.")
     port: int = Field(
         default=5432,
         description="The port to connect to the Postgresql server. Defaults to 5432.",
     )
-    username: str = Field(description="The username to authenticate with.")
+    username: str = Field(default=..., description="The username to authenticate with.")
     password: SecretStr = Field(
-        description="The password for the database user (optional)."
+        default=..., description="The password for the database user (optional)."
     )
-    name: str = Field(description="The name of the database to connect to.")
+    name: str = Field(
+        default=..., description="The name of the database to connect to."
+    )
     ssl: bool = Field(
         default=False,
         description="Whether to use SSL when connecting to the Postgresql server.",
@@ -102,8 +111,15 @@ class PostgresSettings(BaseModel):
 
         return connection_uri
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        env_prefix="POSTGRES__",
+    )
 
-class CacheSettings(BaseModel):
+
+class CacheSettings(BaseSettings):
     backend: CacheBackend = Field(
         default=CacheBackend.REDIS, description="The type of cache to use."
     )
@@ -113,9 +129,16 @@ class CacheSettings(BaseModel):
         "If None, keep keys forever.",
     )
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        env_prefix="CACHE__",
+    )
 
-class RedisSettings(BaseModel):
-    host: str = Field(description="The host of the Redis server.")
+
+class RedisSettings(BaseSettings):
+    host: str = Field(default=..., description="The host of the Redis server.")
     port: int = Field(
         default=6379,
         description="The port to connect to the Redis server. Defaults to 6379.",
@@ -137,31 +160,45 @@ class RedisSettings(BaseModel):
         description="Whether to enable client-side caching for Redis. Defaults to False.",
     )
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        env_prefix="REDIS__",
+    )
 
-class LoggingSettings(BaseModel):
+
+class LoggingSettings(BaseSettings):
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="The logging level of the application."
     )
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        env_prefix="LOGGING__",
+    )
 
-class RepositorySettings(BaseModel):
+
+class RepositorySettings(BaseSettings):
     backend: RepositoryBackend = Field(
         default=RepositoryBackend.POSTGRESQL,
         description="The type of repository to use.",
     )
 
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+        env_prefix="REPOSITORY__",
+    )
 
-class ApplicationSettings(BaseSettings):
+
+class ApplicationSettings(BaseModel):
     api: APISettings = Field(default_factory=APISettings)
     postgres: PostgresSettings = Field(default_factory=PostgresSettings)  # pyright: ignore
     cache: CacheSettings = Field(default_factory=CacheSettings)
     redis: RedisSettings = Field(default_factory=RedisSettings)  # pyright: ignore
     repository: RepositorySettings = Field(default_factory=RepositorySettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
-
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-        env_nested_delimiter="__",
-    )

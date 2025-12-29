@@ -4,7 +4,7 @@ from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 from alembic import context
-from repository_infrastructure_example.application.context import ApplicationContext
+from repository_infrastructure_example.application.settings import PostgresSettings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -39,10 +39,10 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    application_context = ApplicationContext()
+    postgres_settings = PostgresSettings()
 
     context.configure(
-        url=application_context.settings.postgres.get_connection_uri(),
+        url=postgres_settings.get_connection_uri(),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -59,12 +59,10 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    application_context = ApplicationContext()
+    postgres_settings = PostgresSettings()
 
     configuration = config.get_section(config.config_ini_section, {})
-    configuration["sqlalchemy.url"] = (
-        application_context.settings.postgres.get_connection_uri()
-    )
+    configuration["sqlalchemy.url"] = postgres_settings.get_connection_uri()
 
     connectable = engine_from_config(
         configuration,
