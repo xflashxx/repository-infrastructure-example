@@ -18,6 +18,17 @@ This repository is my answer. It shows patterns that have worked well for me in 
 
 I'm not trying to be academically perfect here. These are pragmatic patterns that scale as your codebase grows.
 
+## Who This Is For
+
+You might find this useful if you're interested in:
+
+- Repository and service patterns in Python
+- Clean FastAPI architecture that doesn't over-engineer things
+- Explicit dependency management without magic
+- Building apps with multiple entrypoints
+
+My advice: read through the code, understand the trade-offs I've made, and adapt what fits your situation. Don't just copy and paste—these patterns should inspire your own solutions.
+
 ## Architecture Overview
 
 Here's how I've structured the layers:
@@ -269,16 +280,7 @@ Here's the complete list if you need to dig into specific settings.
 |----------|------|----------|---------|-------------|
 | `LOGGING__LEVEL` | string | No | `INFO` | Log level (DEBUG/INFO/WARNING/ERROR/CRITICAL) |
 
-## Who This Is For
 
-You might find this useful if you're interested in:
-
-- Repository and service patterns in Python
-- Clean FastAPI architecture that doesn't over-engineer things
-- Explicit dependency management without magic
-- Building apps with multiple entrypoints
-
-My advice: read through the code, understand the trade-offs I've made, and adapt what fits your situation. Don't just copy and paste—these patterns should inspire your own solutions.
 
 ## Final Thoughts
 
