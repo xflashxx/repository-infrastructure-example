@@ -10,24 +10,30 @@ from repository_infrastructure_example.application.api.dependencies import (
 from repository_infrastructure_example.application.context import ApplicationContext
 
 _API_KEY_HEADER_NAME: Final[str] = "X-API-KEY"
-_API_KEY_HEADER: APIKeyHeader = APIKeyHeader(
+
+_api_key_header: APIKeyHeader = APIKeyHeader(
     name=_API_KEY_HEADER_NAME, auto_error=False
 )
 
 
 def raise_unauthorized_exception() -> Never:
+    """
+    Raises an HTTP 401 Unauthorized exception for API key authentication.
+    """
     raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API Key"
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid API Key",
+        headers={"WWW-Authenticate": "API Key"},
     )
 
 
-def api_key_dependency(
+def verify_endpoint_access(
     *,
-    provided: str | None = Security(_API_KEY_HEADER),
+    provided: str | None = Security(_api_key_header),
     context: ApplicationContext = Depends(get_application_context),
 ) -> None:
     """
-    FastAPI dependency to handle API key authentication.
+    Verify endpoint access using API key authentication.
 
     :param provided: The API key provided in the request header.
     :param context: The application context.
@@ -37,11 +43,11 @@ def api_key_dependency(
 
     require_authentication: bool = context.settings.api.require_authentication
 
-    # Authentication disabled → always allow
+    # Authentication disabled: always allow
     if not require_authentication:
         return
 
-    # Authentication enabled → key must be present
+    # Authentication enabled: key must be present
     if provided is None:
         raise_unauthorized_exception()
 
