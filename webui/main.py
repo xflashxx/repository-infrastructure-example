@@ -27,7 +27,7 @@ if __name__ == "__main__":
     # Set up the application
     application_context = ApplicationContext()
     application_context.log_settings()
-    application_context.postgres_client.run_migrations()
+    application_context.clients.postgres.run_migrations()
 
     # Run Streamlit
     pg.run()

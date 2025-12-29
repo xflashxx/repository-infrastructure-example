@@ -1,6 +1,13 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field, SecretStr, model_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    PositiveFloat,
+    PositiveInt,
+    SecretStr,
+    model_validator,
+)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
@@ -97,6 +104,34 @@ class PostgresSettings(BaseModel):
         return connection_uri
 
 
+class RedisSettings(BaseModel):
+    host: str = Field(description="The host of the Redis server.")
+    port: int = Field(
+        default=6379,
+        description="The port to connect to the Redis server. Defaults to 6379.",
+    )
+    password: SecretStr | None = Field(
+        default=None,
+        description="The password for the Redis server (optional).",
+    )
+    timeout: PositiveFloat = Field(
+        default=0.5,
+        description="The timeout in seconds for Redis operations. Defaults to 0.5 seconds.",
+    )
+    health_check_interval: PositiveInt = Field(
+        default=30,
+        description="The interval in seconds for Redis health checks. Defaults to 30 seconds.",
+    )
+    keys_ttl: PositiveInt | None = Field(
+        default=None,
+        description="The default time-to-live (TTL) in seconds for Redis keys (optional).",
+    )
+    client_side_caching: bool = Field(
+        default=False,
+        description="Whether to enable client-side caching for Redis. Defaults to False.",
+    )
+
+
 class LoggingSettings(BaseModel):
     level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = Field(
         default="INFO", description="The logging level of the application."
@@ -113,6 +148,7 @@ class RepositorySettings(BaseModel):
 class ApplicationSettings(BaseSettings):
     api: APISettings = Field(default_factory=APISettings)
     postgres: PostgresSettings = Field(default_factory=PostgresSettings)  # pyright: ignore
+    redis: RedisSettings = Field(default_factory=RedisSettings)  # pyright: ignore
     repository: RepositorySettings = Field(default_factory=RepositorySettings)
     logging: LoggingSettings = Field(default_factory=LoggingSettings)
 

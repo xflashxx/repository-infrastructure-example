@@ -31,7 +31,7 @@ def seed(
     """Seeds the development database with synthetic data."""
     ctx = get_context()
     # Run database migrations
-    ctx.postgres_client.run_migrations()
+    ctx.clients.postgres.run_migrations()
 
     logger.info("Seeding fake data...")
 

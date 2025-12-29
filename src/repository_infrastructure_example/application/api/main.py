@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
     context.log_settings()
 
     # Run database migrations
-    context.postgres_client.run_migrations()
+    context.clients.postgres.run_migrations()
 
     # Store application context
     app.state.context = context

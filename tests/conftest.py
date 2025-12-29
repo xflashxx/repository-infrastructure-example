@@ -20,7 +20,7 @@ from repository_infrastructure_example.utilities.collections import first_elemen
 
 # Run database migrations
 application_context = ApplicationContext()
-application_context.postgres_client.run_migrations()
+application_context.clients.postgres.run_migrations()
 
 
 @pytest.fixture

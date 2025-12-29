@@ -4,5 +4,5 @@ from repository_infrastructure_example.application.context import ApplicationCon
 def get_context() -> ApplicationContext:
     """Creates and returns the application context."""
     ctx = ApplicationContext()
-    ctx.postgres_client.run_migrations()
+    ctx.clients.postgres.run_migrations()
     return ctx
