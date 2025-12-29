@@ -1,10 +1,13 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Security
 from fastapi.responses import JSONResponse
 
 from repository_infrastructure_example import __appname__, __version__
 from repository_infrastructure_example.application.api import routers
+from repository_infrastructure_example.application.api.authentication.api_key import (
+    api_key_dependency,
+)
 from repository_infrastructure_example.application.api.responses import (
     ErrorResponseModel,
 )
@@ -30,9 +33,6 @@ async def lifespan(app: FastAPI):
     yield
 
 
-# TODO: add security (documentation protection and endpoint api key)
-
-
 # Create the FastAPI application
 app = FastAPI(title=__appname__, version=__version__, lifespan=lifespan)
 
@@ -50,5 +50,7 @@ async def http_exception_handler(request: Request, exc: HTTPError) -> JSONRespon
 
 ##### Add routers
 app.include_router(routers.health_router)
-app.include_router(routers.organisation_router)
-app.include_router(routers.user_router)
+app.include_router(
+    routers.organisation_router, dependencies=[Security(api_key_dependency)]
+)
+app.include_router(routers.user_router, dependencies=[Security(api_key_dependency)])
