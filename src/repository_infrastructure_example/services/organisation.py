@@ -187,14 +187,7 @@ class OrganisationService:
             raise OrganisationNotFoundError(organisation_id)
 
         # Check if we update anything
-        if all(
-            field is None
-            for field in (
-                name,
-                email,
-                is_active,
-            )
-        ):
+        if all(field is None for field in (name, email, is_active)):
             return
 
         # Ensure the organisation name is not already taken
