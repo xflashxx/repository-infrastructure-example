@@ -8,5 +8,5 @@ def get_context() -> ApplicationContext:
     :return: Instance of ApplicationContext.
     """
     ctx = ApplicationContext()
-    ctx.clients.postgres.run_migrations()
+    ctx.clients.postgres.run_migrations(disable_logging=True)
     return ctx

@@ -93,20 +93,23 @@ class PostgresClient:
             session.close()
 
     @staticmethod
-    def run_migrations() -> None:
+    def run_migrations(disable_logging: bool = False) -> None:
         """
         Run database migrations using Alembic.
 
         Note: This method runs Alembic in a subprocess to avoid interfering with
         existing loggers in the current process.
 
+        :param disable_logging: Whether to disable logging during migration.
+            Defaults to False.
         :return: None
         :raises RuntimeError: If the migration process fails.
         """
-        logger.info("Running database migrations...")
+        if not disable_logging:
+            logger.info("Running database migrations...")
 
         try:
-            subprocess.run(
+            result = subprocess.run(
                 ["alembic", "upgrade", "head"],
                 check=True,
                 capture_output=True,
@@ -116,10 +119,15 @@ class PostgresClient:
             stdout = error.stdout.strip() if error.stdout else "No output"
             stderr = error.stderr.strip() if error.stderr else "No error output"
 
-            logger.critical(
-                f"Database migration with command '{error.cmd}' failed with exit code "
-                f"{error.returncode}:\nstdout: {stdout}\nstderr: {stderr}"
-            )
+            if not disable_logging:
+                logger.critical(
+                    f"Alembic migration failed (exit code {error.returncode})\n"
+                    f"stdout:\n{stdout}\n"
+                    f"stderr:\n{stderr}"
+                )
+
             raise RuntimeError("Database migration failed") from error
 
-        logger.success("Database migrations completed successfully.")
+        if not disable_logging:
+            logger.info(f"Alembic Output:\n{result.stderr.strip()}")
+            logger.success("Database migrations completed successfully.")
