@@ -55,7 +55,7 @@ jobs:
           python-version-file: ".python-version"
       - name: Install Dependencies
         run: |
-          uv sync --all-extras --dev --no-editable --no-cache
+          uv sync --all-extras --all-groups --dev --no-editable
       - name: Run pre-commits
         run: |
           uv run pre-commit run --all-files --verbose
