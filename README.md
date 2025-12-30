@@ -95,10 +95,40 @@ Here's what I'm using:
 
 - Python ≥ 3.14
 - [uv](https://docs.astral.sh/uv/getting-started/installation/) for dependency management
+- [pre-commit](https://pre-commit.com/#install) for code quality hooks
 - A running PostgreSQL instance
 - A running Redis instance
 
+**For Makefile users** (optional but recommended):
+- Linux/macOS: `make` is usually pre-installed
+  - Ubuntu/Debian: `sudo apt install build-essential`
+  - macOS: `xcode-select --install`
+- Windows:
+  - Install [Make for Windows](https://gnuwin32.sourceforge.net/packages/make.htm)
+  - Or use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (recommended)
+
+To get you started, a Docker Compose file (`compose.yaml`) is provided in the repository that will set up a PostgreSQL and Redis instance for you.
+Before starting the Docker containers, make sure that you populated the `.env` file with the necessary credentials.
+
 ### Installation
+
+**Option 1: Use Make (Recommended)**
+If you have `make` installed, setup is simple:
+
+```bash
+# Clone the repository
+git clone https://github.com/xflashxx/repository-infrastructure-example.git
+cd repository-infrastructure-example
+
+# Install everything (dependencies, pre-commit hooks, etc.)
+make install
+
+# Copy the example config and customize it
+cp example.env .env
+# Edit .env with your database and Redis settings
+```
+
+**Option 2: Manual Setup**
 
 ```bash
 # Clone the repository
@@ -107,13 +137,11 @@ cd repository-infrastructure-example
 
 # Install everything (I recommend installing all dev dependencies)
 uv sync --all-groups --all-extras --dev
+pre-commit install
 
 # Copy the example config and customize it
 cp example.env .env
 # Edit .env with your database and Redis settings
-
-# Apply database migrations
-uv run alembic upgrade head
 ```
 
 ### Running It
@@ -132,6 +160,17 @@ poe webui
 ```
 
 Once the API is running, check out the documentation at `/docs` (Swagger) or `/redoc`.
+Ensure that your virtual environment is activated. You can activate it using the following command:
+
+```bash
+source .venv/bin/activate
+```
+
+Alternatively, use `uv` to start the application by prepending the command with `uv run`, for example:
+
+```bash
+uv run poe api
+```
 
 ## Configuration
 
@@ -141,6 +180,38 @@ To get started, copy the example config `example.env` to `.env` and edit it to y
 Also, see the [Environment Variables](#environment-variables) section for a complete reference.
 
 ## Working on the Code
+
+### Makefile commands
+I have included a Makefile with common development tasks. Here are the available commands:
+```bash
+# Show all available commands
+make help
+
+# Install dependencies and pre-commit hooks
+make install
+
+# Update dependencies and lock file
+make sync
+
+# Format code with Ruff
+make format
+
+# Run linting checks
+make lint
+
+# Run type checking
+make typecheck
+
+# Run tests with coverage
+make test
+
+# Run everything (format, lint, typecheck, test)
+make all
+
+# Run everything and commit
+make commit
+```
+The `make all` command is particularly useful before committing - it ensures your code is formatted, linted, type-checked, and tested before you push changes. The `make commit` command does the same but also commits the changes for you.
 
 ### Code Quality
 
@@ -159,7 +230,10 @@ I use strict type checking because I'd rather catch errors at development time t
 ### Running Tests
 
 ```bash
-# Run the full suite with coverage
+# Using Make
+make test
+
+# Or manually
 uv run pytest
 
 # Run a specific test file
@@ -170,6 +244,7 @@ uv run pytest -v
 ```
 
 Tests use FastAPI's `TestClient` and measure coverage against the `src/` directory.
+Make sure that authentication for the endpoints is disabled during testing.
 
 ### Database Migrations
 
@@ -196,7 +271,7 @@ I've included a Dockerfile for containerized deployment:
 docker build -t repository-infrastructure-example .
 
 # Run it with your config
-docker run --env-file .env -p 8000:8000 repository-infrastructure-example
+docker run --env-file .env -p 8000:8000 --net=host repository-infrastructure-example
 ```
 
 Make sure your `.env` file has all the necessary database and Redis connection details.
