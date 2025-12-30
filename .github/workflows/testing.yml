@@ -1,0 +1,65 @@
+name: Code Testing Pipeline
+env: ${{ vars }}
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - ".github"
+      - "cli/**"
+      - "alembic/**"
+      - "src/**"
+      - "tests/**"
+      - "webui/**"
+      - "Dockerfile"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".python-version"
+      - "pre-commit-config.yaml"
+      - "alembic.ini"
+jobs:
+  test-code:
+    runs-on: ubuntu-latest
+    environment: testing
+    permissions:
+      contents: read
+      issues: write
+    services:
+      postgres:
+        image: postgres:17
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES__PASSWORD }}
+          POSTGRES_DB: postgres
+        options: >-
+          --health-cmd="pg_isready -U postgres" --health-interval=10s --health-timeout=5s --health-retries=5
+      redis:
+        image: redis:8
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: ".python-version"
+      - name: Install Dependencies
+        run: |
+          uv sync --all-extras --dev --no-editable --no-cache
+      - name: Run pre-commits
+        run: |
+          uv run pre-commit run --all-files --verbose
+      - name: Run Pytest
+        run: |
+          uv run -v pytest
+        env: ${{ secrets }}
