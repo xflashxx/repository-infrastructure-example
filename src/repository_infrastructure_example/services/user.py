@@ -39,7 +39,7 @@ class UserNotFoundError(UserServiceError, HTTPError):
 class UserValidationError(UserServiceError, HTTPError):
     """Exception raised when a user is not valid."""
 
-    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+    status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
     detail = "User validation error"
 
     def __init__(self, message: str) -> None:

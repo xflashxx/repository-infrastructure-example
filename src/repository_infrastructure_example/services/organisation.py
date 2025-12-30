@@ -50,7 +50,7 @@ class OrganisationAlreadyExistsError(OrganisationServiceError, HTTPError):
 
 
 class OrganisationValidationError(OrganisationServiceError, HTTPError):
-    status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
+    status_code = status.HTTP_422_UNPROCESSABLE_CONTENT
     detail = "Organisation validation error"
 
     def __init__(self, message: str) -> None:
