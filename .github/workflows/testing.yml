@@ -20,6 +20,7 @@ on:
       - ".python-version"
       - "pre-commit-config.yaml"
       - "alembic.ini"
+      - "README.md"
 jobs:
   test-code:
     runs-on: ubuntu-latest
