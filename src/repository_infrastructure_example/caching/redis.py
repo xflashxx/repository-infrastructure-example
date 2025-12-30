@@ -20,7 +20,7 @@ class RedisCacheService(CacheService):
 
         self._client.sadd(key, *value)
 
-        if self._ttl is not None and self._ttl > 0:
+        if self._ttl:
             self._client.expire(name=key, time=self._ttl)
 
     @override

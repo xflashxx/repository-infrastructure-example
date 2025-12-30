@@ -50,7 +50,7 @@ def list_users(
         console.print(f"[red]Error:[/red] {error}")
         raise typer.Exit(code=1)
 
-    if limit > 0:
+    if limit:
         users = users[:limit]
 
     for user in users:

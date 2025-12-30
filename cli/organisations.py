@@ -47,7 +47,7 @@ def list_organisations(
         console.print(f"[red]Error:[/red] {error}")
         raise typer.Exit(code=1)
 
-    if limit > 0:
+    if limit:
         organisations = organisations[:limit]
 
     for org in organisations:
