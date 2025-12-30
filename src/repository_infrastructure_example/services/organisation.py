@@ -200,7 +200,6 @@ class OrganisationService:
         # Ensure the organisation name is not already taken
         if name is not None and existing.name != name:
             # Check if another organisation with the same name already exists
-            # TODO: replace method below with dedicated method like 'check if name is available'
             existing_by_name = self._repository.get_organisation_by_name(name)
             if existing_by_name:
                 raise OrganisationAlreadyExistsError(
