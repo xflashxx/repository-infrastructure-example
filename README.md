@@ -1,4 +1,8 @@
 # Repository Infrastructure Example
+![CI](https://github.com/xflashxx/repository-infrastructure-example/actions/workflows/ci.yml/badge.svg)
+![Ruff](https://img.shields.io/badge/lint-ruff-46a2f1)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.14-blue)
 
 *Note*: Parts of this documentation were written with AI assistance to improve clarity and organization; mostly because I'm better at writing code than writing about code :)
 
