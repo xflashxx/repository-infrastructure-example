@@ -11,13 +11,13 @@
 
 .PHONY: install
 install: .uv .pre-commit  ## Install the package, dependencies, and pre-commit for local development
-	uv sync --frozen --all-extras --all-packages
+	uv sync --frozen --all-extras --all-groups --dev
 	pre-commit install --install-hooks
 
 
 .PHONY: sync
 sync: .uv ## Update local packages and uv.lock
-	uv sync --all-extras --all-packages
+	uv sync --all-extras --all-groups --dev
 
 .PHONY: format
 format: ## Format the code
