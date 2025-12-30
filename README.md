@@ -21,6 +21,41 @@ This repository is my answer. It shows patterns that have worked well for me in 
 
 I'm not trying to be academically perfect here. These are pragmatic patterns that scale as your codebase grows.
 
+## Features Overview
+
+### Core Infrastructure
+- **Database session management** – Clean lifecycle handling with proper injection and disposal
+- **Repository pattern** – Data access layer separated from business logic
+- **Service layer** – Business logic isolated and testable
+- **Application context** – Explicit dependency wiring without globals or magic
+
+### API & Security
+- **FastAPI REST API** – Modern, fast, and fully typed HTTP endpoints
+- **API key authentication** – Optional protection for API endpoints
+- **HTTP Basic Auth** – Secure access to API documentation (Swagger/ReDoc)
+- **Health check endpoints** – Monitor application and dependency status
+
+### Multiple Interfaces
+- **HTTP API (FastAPI)** – RESTful endpoints for programmatic access
+- **CLI (Typer)** – Command-line tools for administrative tasks
+- **Web UI (Streamlit)** – Lightweight interface for data inspection and management
+
+### Data & Caching
+- **PostgreSQL integration** – Robust relational database with SQLModel ORM
+- **Redis caching** – Fast caching layer with configurable TTL
+- **Database migrations (Alembic)** – Version-controlled schema changes
+- **Synthetic data generation (Faker)** – Realistic test data for development
+
+### Developer Experience
+- **Strict type checking (Basedpyright)** – Catch errors before runtime
+- **Code formatting (Ruff)** – Consistent style across the codebase
+- **Pre-commit hooks** – Automated quality checks
+- **Comprehensive test suite (pytest)** – FastAPI TestClient integration
+- **Docker support** – Containerized deployment ready
+- **Environment-based configuration** – Pydantic settings with .env support
+
+All three entrypoints (API, CLI, Web UI) share the same business logic and infrastructure, demonstrating how to build a cohesive application with multiple access patterns.
+
 ## Who This Is For
 
 You might find this useful if you're interested in:
